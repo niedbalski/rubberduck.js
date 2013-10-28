@@ -1,0 +1,17 @@
+define(function() {
+    var c = {};
+
+    c.name = 'user';
+    c.peo = "testing";
+
+    c.init = function() {
+        console.log('Calling app from controller [%s]', this.app.name);
+    }
+
+    c.index = function() {
+        c.views.user.render({});
+    }
+
+    return c;
+
+});

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="text/javascript" src="./libs/jquery-2.0.3.js"></script>  
+    <script type="text/javascript" src="./libs/require.js"></script>
+    <script type="text/javascript" src="./libs/jquery.routes.js"></script>
+
+    <!-- This is the r framework -->
+    <script type="text/javascript" src="./r.js"></script> 
+    <script>
+      $(document).ready(function() {
+
+         var app = new r.app({
+             name: 'TodoApp',
+             path: '/rubberduck.js/app/',
+             controllers: [ 'user', 'product' ]
+         });
+         
+         app.done(function(app) {
+              app.connect('/user/{id:int}', app.getController('user').index);
+              app.run();
+         });
+
+         app.fail(function(app, error) {
+            $('body').append('<h1> Application ' + app.name + 
+                ' cannot be loaded at this time: ' + error);
+         });
+
+      });
+
+    </script>
+
+  </head>
+  <body>
+  </body>
+</html>
