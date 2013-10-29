@@ -69,7 +69,7 @@
 				if (typeof(defaults) === 'function') { func = defaults; defaults = undefined; }
 				if (typeof(name) === 'object') { defaults = name; name = undefined; }
 
-				// all routes have a name
+ 				// all routes have a name
 				if (name === undefined) { name = 'route' + (++routecount); }
 
 				var regex = /\{\s*?([a-zA-Z0-9:\|\\*\?\.]*?)\s*?\}/gim;
@@ -77,6 +77,7 @@
 				var item = route;
 				var routeexp = '^' + route;
 				var vars = [];
+                                var extended = arguments;
 
 				// find parameters in route and create a regexp
 				while (match = regex.exec(item)) {
@@ -166,7 +167,7 @@
 						location.href = this.url(data);
 					},
 					execute: function(data) {
-						this.func.apply($.extend({}, defaults, data));
+						this.func.apply($.extend(defaults, data), extended);
 					},
 					vars: vars,
 					defaults: defaults,

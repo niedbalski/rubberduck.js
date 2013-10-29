@@ -4,8 +4,9 @@
     <script type="text/javascript" src="./libs/jquery-2.0.3.js"></script>
     <script type="text/javascript" src="./libs/require.js"></script>
     <script type="text/javascript" src="./libs/jquery.routes.js"></script>
+    <script type="text/javascript" src="./libs/handlebars.js"></script>
 
-    <!-- This is the r framework -->
+    <!-- This is the R framework -->
     <script type="text/javascript" src="./r.js"></script>
     <script>
       $(document).ready(function() {
@@ -13,11 +14,12 @@
          var app = new r.app({
              name: 'TodoApp',
              path: '/rubberduck.git/app/',
-             controllers: [ 'user' ]
+             controllers: [ 'user' ],
+             models: [ 'user' ]
          });
 
          app.done(function(app) {
-              //app.connect('/user/{id:int}', app.getController('user').index);
+              console.log('ready');
               app.run();
          });
 

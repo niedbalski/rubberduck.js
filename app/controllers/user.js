@@ -1,18 +1,22 @@
 define(function() {
-    var c = {};
+    var c = {}
 
     c.views = [ 'user' ];
     c.name = 'user';
-    c.peo = "testing";
+    c.routes = function() {
+        return {
+            '/user/{id:int}': this.index,
+            '/user/ids/{id:int}': this.index
+        }
+    };
 
     c.init = function() {
-        console.log('Calling app from controller [%s]', this.app.name);
+        console.log('Initialized %s controller', this.name);
     }
 
     c.index = function() {
-        c.getView('user').render();
+        this.getView('user').render(this.id);
     }
 
     return c;
-
 });

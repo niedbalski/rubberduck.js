@@ -1,12 +1,15 @@
+//
 // R framework a minimal mvc framework to
 // solve common javascript problems
 //
 // @author: Jorge Niedbalski R. <jnr@niedbalski.org>
 // @license: MIT
+//
+
 (function() {
     r = {};
     r.app = function(options) {
-        $.extend(this, $.Deferred(), options || {});
+        $.extend(this, options || {});
         var self = this;
 
         requirejs.config({
@@ -14,43 +17,45 @@
                 options.path : "/"
         });
 
-        var w = $.when(this.loadControllers());
-        w.done(function(controllers) {
-            r.app.controllers = controllers;
-            self.resolve(self);
-        });
-
-        w.fail(function(e) {
-            self.reject(self, e);
-        });
-
-        return this;
+        return $.Deferred(function(d) {
+            self.loaded = {};
+            $.each(self.controllers, function(i, controller) {
+                self._load(controller).done(function(controller) {
+                    self.loaded[controller.name] = controller;
+                    if ( i == self.controllers.length - 1 )
+                        return d.resolve(self);
+                });
+            });
+        }).promise();
     }
 
-    r.app.prototype.loaded = {};
-    r.app.prototype.run = function() {
-        console.debug('Initializing \"%s\" application', this.name);
+    r.app.prototype.isLoaded = function() {
+        return ( typeof this.loaded != 'undefined' &&
+                 Object.keys(this.loaded).length > 0)
+    }
 
-        $.each(this.loaded, function(index, controller) {
+    r.app.prototype.run = function() {
+        if ( ! this.isLoaded() ) {
+            console.warn('Application is not loaded');
+            return;
+        }
+
+        $.each(this.loaded, function(i, controller) {
             if ( $.isFunction(controller.init) )
                 controller.init();
 
             if ( controller.hasViews() ) {
-                $.each(controller.views, function(i, view) {
+                $.each(controller.loaded, function(i, view) {
                     if ( $.isFunction(view.init) )
                         view.init();
                 });
             }
-            console.debug('Initialized %s controller', controller.name);
+
+            if ( controller.hasRoutes() )
+                controller._loadRoutes();
         });
 
-        console.debug('Application %s ready', this.name);
-
         $.routes.load(location.hash);
-    }
-
-    r.app.prototype.route = function(route, cb) {
-        $.routes.add(route, cb);
     }
 
     r.app.prototype.hasControllers = function() {
@@ -58,42 +63,31 @@
                  this.controllers.length > 0);
     }
 
-    r.app.prototype._extendController = function(controller) {
+    r.app.prototype._extend = function(controller) {
         $.extend(controller, new r.app.controller(this));
         return controller;
     }
 
-    r.app.prototype.getControllers = function() {
-        var prefix = 'controllers/';
-        return $.map(this.controllers, function(controller) {
-            return prefix + controller;
-        });
+    r.app.prototype.getController = function(name) {
+        return this.loaded[name];
     }
 
-    r.app.prototype.getController = function(name) { return this.loaded[name]; }
+    r.app.prototype._load = function(controller) {
+        self = this;
 
-    r.app.prototype.loadControllers = function() {
-        var dfd = new $.Deferred();
-        var self = this;
-
-        if(!this.hasControllers())
-            return this.reject('no defined controllers');
-
-        require(this.getControllers(), function() {
-            var controllers = arguments || [];
-            $.each(arguments,  function(index, controller) {
-                var controller = self._extendController(controller);
-
-                controller.loadViews().done(function() {
-                    self.loaded[controller.name] = controller;
-                }).fail(function() {
-                    return dfd.reject();
+        return $.Deferred(function(d) {
+            require(['controllers/' + controller], function(controller) {
+                controller = self._extend(controller);
+                $.each(controller.views, function(i, view) {
+                    controller.loaded = {};
+                    controller._load(view).done(function(view) {
+                        controller.loaded[controller.views[i]] = view;
+                        if (i == controller.views.length - 1)
+                            return d.resolve(controller);
+                    });
                 });
             });
-            return dfd.resolve();
-        }, function(error) { return dfd.reject(error); });
-
-        return dfd;
+        }).promise();
     }
 
     r.app.controller = function(app) {
@@ -101,51 +95,78 @@
         return this;
     }
 
-    r.app.controller.prototype.hasViews = function() {
-        return ( typeof this.views != 'undefined' &&
-                 this.views.length > 0 );
+    r.app.controller.prototype._load = function(viewName) {
+        self = this;
+        return $.Deferred(function(d) {
+            require(['views/' + viewName], function(view) {
+                d.resolve(self._extend(view));
+            });
+        }).promise();
     }
 
-    r.app.controller.prototype._extendView = function(view) {
+    r.app.controller.prototype.getView = function(name) {
+        return this.loaded[name];
+    }
+
+    r.app.controller.prototype.hasRoutes = function() {
+        routes = self.routes()
+        return ( typeof routes != 'undefined' &&
+                 Object.keys(routes).length > 0);
+    }
+
+    r.app.controller.prototype.hasViews = function() {
+        return ( typeof this.loaded != 'undefined' &&
+                 this.loaded.length > 0 );
+    }
+
+    r.app.controller.prototype._extend = function(view) {
         $.extend(view, new this.app.view(this));
+        //jquery it
+        if ( view.el )
+            view.el = $(view.el);
         return view;
     }
 
-    r.app.controller.prototype.getViews = function() {
-        var prefix = 'views/';
-        return $.map(this.views, function(view) {
-            return prefix + view;
+    r.app.controller.prototype._loadRoutes = function() {
+        self = this;
+        routes = self.routes();
+        Object.keys(routes).forEach(function(r) {
+            $.routes.add(r, routes[r], self);
         });
     }
-
-    r.app.controller.prototype.loadedViews = {};
-    r.app.controller.prototype.getView = function(name) { return this.loadedViews[name]; }
-    r.app.controller.prototype.loadViews = function() {
-        var dfd = new $.Deferred();
-        var self = this;
-
-        console.debug('Loading views for %s controller', this.name);
-
-        if ( ! this.hasViews() ) {
-            console.warn('Not defined views for controller %s', this.name);
-        } else {
-            require(this.getViews(), function() {
-                var views = arguments || [];
-                $.each(views, function(index, view) {
-                    var view = self._extendView(view);
-                    self.loadedViews[self.views[index]] = view;
-                });
-                return dfd.resolve();
-            }, function(error) { return dfd.reject(error); });
-
-        }
-        return dfd;
-    }
-
 
     r.app.prototype.view = function(controller) {
         this.controller = controller;
         return this;
+    }
+
+    r.app.template = function(view, data) {
+        if ( typeof view != 'undefined' )
+            this.view = view;
+
+        if ( typeof data != 'undefined' ) {
+            this._data = data;
+            this.tpl = Handlebars.compile(this._data);
+        }
+
+        return this;
+    }
+
+    r.app.template.prototype.load = function(name) {
+        self = this;
+        return $.Deferred(function(d) {
+            path = 'app/views/templates/' + name + '.html';
+            $.get(path, function(data) {
+                self.tpl = Handlebars.compile(data);
+                d.resolve(self);
+            });
+        }).promise();
+    }
+
+    r.app.template.prototype.render = function(data) {
+        rendered = this.tpl(data);
+        return ( typeof this.view != 'undefined' && typeof this.view.el != 'undefined') ?
+            this.view.el.html(rendered) : rendered;
     }
 
     return r;

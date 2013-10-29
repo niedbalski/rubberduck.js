@@ -1,8 +1,15 @@
 define(function() {
     var v = {};
- 
-    v.render = function() {
-        console.log('rendered view');
+
+    v.el = 'body'; //jquery selector to append on template render
+
+    v.render = function(id) {
+        new r.app.template(this).load('user')
+            .done(function(tpl) {
+                return tpl.render({
+                    user_id: id
+                });
+        });
     }
 
     return v;
