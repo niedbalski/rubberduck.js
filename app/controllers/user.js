@@ -5,8 +5,8 @@ define(function() {
     c.name = 'user';
     c.routes = function() {
         return {
-            '/user/{id:int}': this.index,
-            '/user/ids/{id:int}': this.index
+            '/user/{id:int}': this.showUserId,
+            '/user/ids/{id:int}': this.showUserId
         }
     };
 
@@ -14,7 +14,7 @@ define(function() {
         console.log('Initialized %s controller', this.name);
     }
 
-    c.index = function() {
+    c.showUserId = function() {
         this.getView('user').render(this.id);
     }
 

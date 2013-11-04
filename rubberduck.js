@@ -11,7 +11,8 @@
     RubberDuck.app = function(options) {
         $.extend(this, $.Deferred(), options || {});
 
-        // By default false, if you want to enable this use loadLibraries: true
+        // By default RD will not load libraries from application/libs,
+        // if you want to enable this use loadLibraries: true
         // in your application settings
         if ( typeof this.loadLibraries == 'undefined' )
             this.loadLibraries = false;
@@ -25,6 +26,7 @@
         return this;
     }
 
+    RubberDuck.app.prototype.cache = {};
     RubberDuck.app.prototype.getLibraries = function() {
         var self = this;
         return ( self.loadLibraries ) ?
@@ -78,7 +80,6 @@
             return console.warn('Cueek, load the application before invoke run!');
 
         $.each(this.loaded, function(i, controller) {
-
             if ( $.isFunction(controller.init) )
                 controller.init();
 
@@ -109,7 +110,6 @@
         var self = this;
 
         return $.Deferred(function(d) {
-
             require(['controllers/' + controller], function(c) {
                 controller = $.extend(c, new RubberDuck.app.controller(self));
                 $.each(controller.views, function(i, view) {
@@ -146,7 +146,6 @@
     RubberDuck.app.controller.prototype.hasRoutes = function() {
         var self = this;
         var routes = self.routes();
-
         return ( typeof routes != 'undefined' &&
                  Object.keys(routes).length > 0);
     }
@@ -170,6 +169,7 @@
         return this;
     }
 
+    RubberDuck.app.view.prototype.cache = {};
     RubberDuck.app.template = function(view, data) {
         if ( typeof view != 'undefined' )
             this.view = view;
@@ -178,7 +178,6 @@
             this._data = data;
             this.tpl = Handlebars.compile(this._data);
         }
-
         return this;
     }
 
@@ -203,11 +202,18 @@
 
             templatePath = templatePath + '/' + name + '.html';
 
-            console.debug('Loading template ' + templatePath);
-            $.get(templatePath, function(data) {
-                self.tpl = Handlebars.compile(data);
+            if(self.view.cache.hasOwnProperty(templatePath)) {
+                console.debug('Loading template from cache: ' + templatePath);
+                self.tpl = self.view.cache[templatePath];
                 d.resolve(self);
-            });
+            } else {
+                console.debug('Loading template from url: ' + templatePath);
+                $.get(templatePath).done(function(data) {
+                    self.view.cache[templatePath] = Handlebars.compile(data);
+                    self.tpl = self.view.cache[templatePath];
+                    d.resolve(self);
+                });
+            }
 
         }).promise();
     }
