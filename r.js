@@ -9,24 +9,61 @@
 (function() {
     r = {};
     r.app = function(options) {
-        $.extend(this, options || {});
+        $.extend(this, $.Deferred(), options || {});
+
+        //by default load libraries from application/lib/, if
+        // you want to include your own library versions use: loadLibraries: false
+        // in your application configuration
+        if ( typeof this.loadLibraries == 'undefined' )
+            this.loadLibraries = true;
+
+        requirejs.config(
+            $.extend({}, {
+                baseUrl: (typeof this.path != 'undefined') ? this.path : 'app/'
+            }, this.getLibraries()));
+
+        this.loadLibrariesAndControllers();
+        return this;
+    }
+
+    r.app.prototype.getLibraries = function() {
         var self = this;
+        return ( self.loadLibraries ) ?
+            $.extend({}, {
+                paths: {
+                    'jquery.routes': 'lib/jquery.routes',
+                    'handlebars': 'lib/handlebars'
+                },
+                shim: {
+                    'jquery.routes' : {
+                        exports: 'jQuery.fn.routes'
+                    },
+                    'handlebars' : {
+                        exports: 'Handlebars'
+                    }
+                }}) : {};
+    }
 
-        requirejs.config({
-            baseUrl: (typeof options.path != "undefined" ) ?
-                options.path : "app/"
-        });
+    r.app.prototype.loadLibrariesAndControllers = function() {
+        var self = this;
+        return ( self.loadLibraries ) ?
+            require(["jquery.routes", "handlebars"], function(routes, handlebars) {
+                self.loadControllers();
+            }, function(e) {
+                return self.reject(e.message);
+            }) : self.loadControllers();
+    }
 
-        return $.Deferred(function(d) {
-            self.loaded = {};
-            $.each(self.controllers, function(i, controller) {
-                self._load(controller).done(function(controller) {
-                    self.loaded[controller.name] = controller;
-                    if ( i == self.controllers.length - 1 )
-                        return d.resolve(self);
-                });
+    r.app.prototype.loadControllers = function() {
+        var self = this;
+        self.loaded = {};
+        $.each(self.controllers, function(i, controller) {
+            self.loadController(controller).done(function(controller) {
+                self.loaded[controller.name] = controller;
+                if ( i == self.controllers.length - 1 )
+                    return self.resolve(self);
             });
-        }).promise();
+        });
     }
 
     r.app.prototype.isLoaded = function() {
@@ -52,7 +89,7 @@
             }
 
             if ( controller.hasRoutes() )
-                controller._loadRoutes();
+                controller.loadRoutes();
         });
 
         $.routes.load(location.hash);
@@ -67,7 +104,7 @@
         return this.loaded[name];
     }
 
-    r.app.prototype._load = function(controller) {
+    r.app.prototype.loadController = function(controller) {
         var self = this;
 
         return $.Deferred(function(d) {
@@ -75,7 +112,7 @@
                 controller = $.extend(c, new r.app.controller(self));
                 $.each(controller.views, function(i, view) {
                     controller.loaded = {};
-                    controller._load(view).done(function(view) {
+                    controller.loadView(view).done(function(view) {
                         controller.loaded[controller.views[i]] = view;
                         if (i == controller.views.length - 1)
                             return d.resolve(controller);
@@ -90,8 +127,8 @@
         return this;
     }
 
-    r.app.controller.prototype._load = function(viewName) {
-        self = this;
+    r.app.controller.prototype.loadView = function(viewName) {
+        var self = this;
         return $.Deferred(function(d) {
             require(['views/' + viewName], function(v) {
                 d.resolve($.extend(v, new r.app.view(self)));
@@ -104,7 +141,9 @@
     }
 
     r.app.controller.prototype.hasRoutes = function() {
-        routes = self.routes()
+        var self = this;
+        var routes = self.routes();
+
         return ( typeof routes != 'undefined' &&
                  Object.keys(routes).length > 0);
     }
@@ -114,9 +153,9 @@
                  this.loaded.length > 0 );
     }
 
-    r.app.controller.prototype._loadRoutes = function() {
-        self = this;
-        routes = self.routes();
+    r.app.controller.prototype.loadRoutes = function() {
+        var self = this;
+        var routes = self.routes();
         Object.keys(routes).forEach(function(r) {
             $.routes.add(r, routes[r], self);
         });
