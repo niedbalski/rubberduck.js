@@ -135,12 +135,14 @@
         });
     }
 
-    r.app.prototype.view = function(controller) {
+    r.app.prototype.view = function(controller, options) {
+        $.extend(this, options || {});
         this.controller = controller;
         return this;
     }
 
     r.app.template = function(view, data) {
+
         if ( typeof view != 'undefined' )
             this.view = view;
 
@@ -154,12 +156,30 @@
 
     r.app.template.prototype.load = function(name) {
         self = this;
+        self.defaultTemplatePath = 'views/templates';
+
         return $.Deferred(function(d) {
-            path = 'app/views/templates/' + name + '.html';
-            $.get(path, function(data) {
+            if ( typeof self.view == 'undefined' ) {
+                templatePath = self.defaultTemplatePath;
+            } else {
+                if ( typeof self.view.templatePath != 'undefined' ) {
+                    templatePath = self.view.templatePath;
+                } else if ( typeof self.view.controller.app.path != 'undefined' ) {
+                        templatePath = self.view.controller.app.path + 'views/templates';
+                } else {
+                    console.warn('Not defined template path, using default location %s', self.defaultTemplatePath);
+                    templatePath = self.defaultTemplatePath;
+                }
+            }
+
+            templatePath = templatePath + '/' + name + '.html';
+
+            console.debug('Loading template ' + templatePath);
+            $.get(templatePath, function(data) {
                 self.tpl = Handlebars.compile(data);
                 d.resolve(self);
             });
+
         }).promise();
     }
 
