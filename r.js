@@ -94,7 +94,7 @@
         self = this;
         return $.Deferred(function(d) {
             require(['views/' + viewName], function(v) {
-                d.resolve($.extend(v, new r.app.view(self));
+                d.resolve($.extend(v, new r.app.view(self)));
             });
         }).promise();
     }
