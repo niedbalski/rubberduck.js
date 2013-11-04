@@ -5,11 +5,11 @@
     <script type="text/javascript" src="./app/lib/require.js"></script>
 
     <!-- This is the R framework -->
-    <script type="text/javascript" src="./r.js"></script>
+    <script type="text/javascript" src="./rubberduck.js"></script>
     <script>
       $(document).ready(function() {
 
-         var app = new r.app({
+         var app = new RubberDuck.app({
              name: 'TodoApp',
              path: '/rubberduck.git/app/',
              controllers: [ 'user', 'product' ],

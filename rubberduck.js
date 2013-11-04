@@ -7,8 +7,8 @@
 //
 
 (function() {
-    r = {};
-    r.app = function(options) {
+    RubberDuck = {};
+    RubberDuck.app = function(options) {
         $.extend(this, $.Deferred(), options || {});
 
         //by default load libraries from application/lib/, if
@@ -26,7 +26,7 @@
         return this;
     }
 
-    r.app.prototype.getLibraries = function() {
+    RubberDuck.app.prototype.getLibraries = function() {
         var self = this;
         return ( self.loadLibraries ) ?
             $.extend({}, {
@@ -44,7 +44,7 @@
                 }}) : {};
     }
 
-    r.app.prototype.loadLibrariesAndControllers = function() {
+    RubberDuck.app.prototype.loadLibrariesAndControllers = function() {
         var self = this;
         return ( self.loadLibraries ) ?
             require(["jquery.routes", "handlebars"], function(routes, handlebars) {
@@ -54,7 +54,7 @@
             }) : self.loadControllers();
     }
 
-    r.app.prototype.loadControllers = function() {
+    RubberDuck.app.prototype.loadControllers = function() {
         var self = this;
         self.loaded = {};
         $.each(self.controllers, function(i, controller) {
@@ -66,16 +66,14 @@
         });
     }
 
-    r.app.prototype.isLoaded = function() {
+    RubberDuck.app.prototype.isLoaded = function() {
         return ( typeof this.loaded != 'undefined' &&
                  Object.keys(this.loaded).length > 0)
     }
 
-    r.app.prototype.run = function() {
-        if ( ! this.isLoaded() ) {
-            console.warn('Application is not loaded');
-            return;
-        }
+    RubberDuck.app.prototype.run = function() {
+        if ( ! this.isLoaded() )
+            return console.warn('Application is not loaded');
 
         $.each(this.loaded, function(i, controller) {
             if ( $.isFunction(controller.init) )
@@ -95,21 +93,21 @@
         $.routes.load(location.hash);
     }
 
-    r.app.prototype.hasControllers = function() {
+    RubberDuck.app.prototype.hasControllers = function() {
         return ( typeof this.controllers != 'undefined' &&
                  this.controllers.length > 0);
     }
 
-    r.app.prototype.getController = function(name) {
+    RubberDuck.app.prototype.getController = function(name) {
         return this.loaded[name];
     }
 
-    r.app.prototype.loadController = function(controller) {
+    RubberDuck.app.prototype.loadController = function(controller) {
         var self = this;
 
         return $.Deferred(function(d) {
             require(['controllers/' + controller], function(c) {
-                controller = $.extend(c, new r.app.controller(self));
+                controller = $.extend(c, new RubberDuck.app.controller(self));
                 $.each(controller.views, function(i, view) {
                     controller.loaded = {};
                     controller.loadView(view).done(function(view) {
@@ -122,25 +120,25 @@
         }).promise();
     }
 
-    r.app.controller = function(app) {
+    RubberDuck.app.controller = function(app) {
         this.app = app;
         return this;
     }
 
-    r.app.controller.prototype.loadView = function(viewName) {
+    RubberDuck.app.controller.prototype.loadView = function(viewName) {
         var self = this;
         return $.Deferred(function(d) {
             require(['views/' + viewName], function(v) {
-                d.resolve($.extend(v, new r.app.view(self)));
+                d.resolve($.extend(v, new RubberDuck.app.view(self)));
             });
         }).promise();
     }
 
-    r.app.controller.prototype.getView = function(name) {
+    RubberDuck.app.controller.prototype.getView = function(name) {
         return this.loaded[name];
     }
 
-    r.app.controller.prototype.hasRoutes = function() {
+    RubberDuck.app.controller.prototype.hasRoutes = function() {
         var self = this;
         var routes = self.routes();
 
@@ -148,12 +146,12 @@
                  Object.keys(routes).length > 0);
     }
 
-    r.app.controller.prototype.hasViews = function() {
+    RubberDuck.app.controller.prototype.hasViews = function() {
         return ( typeof this.loaded != 'undefined' &&
                  this.loaded.length > 0 );
     }
 
-    r.app.controller.prototype.loadRoutes = function() {
+    RubberDuck.app.controller.prototype.loadRoutes = function() {
         var self = this;
         var routes = self.routes();
         Object.keys(routes).forEach(function(r) {
@@ -161,13 +159,13 @@
         });
     }
 
-    r.app.view = function(controller, options) {
+    RubberDuck.app.view = function(controller, options) {
         $.extend(this, options || {});
         this.controller = controller;
         return this;
     }
 
-    r.app.template = function(view, data) {
+    RubberDuck.app.template = function(view, data) {
         if ( typeof view != 'undefined' )
             this.view = view;
 
@@ -179,7 +177,7 @@
         return this;
     }
 
-    r.app.template.prototype.load = function(name) {
+    RubberDuck.app.template.prototype.load = function(name) {
         var self = this;
         self.defaultTemplatePath = 'views/templates';
 
@@ -209,12 +207,12 @@
         }).promise();
     }
 
-    r.app.template.prototype.render = function(data) {
+    RubberDuck.app.template.prototype.render = function(data) {
         var rendered = this.tpl(data);
         return ( typeof this.view != 'undefined' && typeof this.view.el != 'undefined') ?
             $(this.view.el).html(rendered) : rendered;
     }
 
-    return r;
-
+    //ready to rock and cuek
+    return RubberDuck;
 })();
