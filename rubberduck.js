@@ -11,11 +11,10 @@
     RubberDuck.app = function(options) {
         $.extend(this, $.Deferred(), options || {});
 
-        //by default load libraries from application/lib/, if
-        // you want to include your own library versions use: loadLibraries: false
-        // in your application configuration
+        // By default false, if you want to enable this use loadLibraries: true
+        // in your application settings
         if ( typeof this.loadLibraries == 'undefined' )
-            this.loadLibraries = true;
+            this.loadLibraries = false;
 
         requirejs.config(
             $.extend({}, {
@@ -50,6 +49,7 @@
             require(["jquery.routes", "handlebars"], function(routes, handlebars) {
                 self.loadControllers();
             }, function(e) {
+                console.log(e);
                 return self.reject(e.message);
             }) : self.loadControllers();
     }
@@ -62,6 +62,8 @@
                 self.loaded[controller.name] = controller;
                 if ( i == self.controllers.length - 1 )
                     return self.resolve(self);
+            }).fail(function(e) {
+                return self.reject(e);
             });
         });
     }
@@ -72,10 +74,11 @@
     }
 
     RubberDuck.app.prototype.run = function() {
-        if ( ! this.isLoaded() )
-            return console.warn('Application is not loaded');
+        if (!this.isLoaded())
+            return console.warn('Cueek, load the application before invoke run!');
 
         $.each(this.loaded, function(i, controller) {
+
             if ( $.isFunction(controller.init) )
                 controller.init();
 
@@ -106,6 +109,7 @@
         var self = this;
 
         return $.Deferred(function(d) {
+
             require(['controllers/' + controller], function(c) {
                 controller = $.extend(c, new RubberDuck.app.controller(self));
                 $.each(controller.views, function(i, view) {
@@ -117,6 +121,7 @@
                     });
                 });
             });
+
         }).promise();
     }
 
