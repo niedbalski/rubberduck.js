@@ -14,12 +14,12 @@
          var app = new r.app({
              name: 'TodoApp',
              path: '/rubberduck.git/app/',
-             controllers: [ 'user' ],
+             controllers: [ 'user', 'product' ],
              models: [ 'user' ]
          });
 
          app.done(function(app) {
-              console.log('ready');
+              console.debug('Application is ready to rock and roll!');
               app.run();
          });
 

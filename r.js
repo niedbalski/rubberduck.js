@@ -14,7 +14,7 @@
 
         requirejs.config({
             baseUrl: (typeof options.path != "undefined" ) ?
-                options.path : "/"
+                options.path : "app/"
         });
 
         return $.Deferred(function(d) {
@@ -63,21 +63,16 @@
                  this.controllers.length > 0);
     }
 
-    r.app.prototype._extend = function(controller) {
-        $.extend(controller, new r.app.controller(this));
-        return controller;
-    }
-
     r.app.prototype.getController = function(name) {
         return this.loaded[name];
     }
 
     r.app.prototype._load = function(controller) {
-        self = this;
+        var self = this;
 
         return $.Deferred(function(d) {
-            require(['controllers/' + controller], function(controller) {
-                controller = self._extend(controller);
+            require(['controllers/' + controller], function(c) {
+                controller = $.extend(c, new r.app.controller(self));
                 $.each(controller.views, function(i, view) {
                     controller.loaded = {};
                     controller._load(view).done(function(view) {
@@ -98,8 +93,8 @@
     r.app.controller.prototype._load = function(viewName) {
         self = this;
         return $.Deferred(function(d) {
-            require(['views/' + viewName], function(view) {
-                d.resolve(self._extend(view));
+            require(['views/' + viewName], function(v) {
+                d.resolve($.extend(v, new r.app.view(self));
             });
         }).promise();
     }
@@ -119,14 +114,6 @@
                  this.loaded.length > 0 );
     }
 
-    r.app.controller.prototype._extend = function(view) {
-        $.extend(view, new this.app.view(this));
-        //jquery it
-        if ( view.el )
-            view.el = $(view.el);
-        return view;
-    }
-
     r.app.controller.prototype._loadRoutes = function() {
         self = this;
         routes = self.routes();
@@ -135,14 +122,13 @@
         });
     }
 
-    r.app.prototype.view = function(controller, options) {
+    r.app.view = function(controller, options) {
         $.extend(this, options || {});
         this.controller = controller;
         return this;
     }
 
     r.app.template = function(view, data) {
-
         if ( typeof view != 'undefined' )
             this.view = view;
 
@@ -155,7 +141,7 @@
     }
 
     r.app.template.prototype.load = function(name) {
-        self = this;
+        var self = this;
         self.defaultTemplatePath = 'views/templates';
 
         return $.Deferred(function(d) {
@@ -167,7 +153,8 @@
                 } else if ( typeof self.view.controller.app.path != 'undefined' ) {
                         templatePath = self.view.controller.app.path + 'views/templates';
                 } else {
-                    console.warn('Not defined template path, using default location %s', self.defaultTemplatePath);
+                    console.warn('Not defined template path, using default location %s',
+                                 self.defaultTemplatePath);
                     templatePath = self.defaultTemplatePath;
                 }
             }
@@ -184,9 +171,9 @@
     }
 
     r.app.template.prototype.render = function(data) {
-        rendered = this.tpl(data);
+        var rendered = this.tpl(data);
         return ( typeof this.view != 'undefined' && typeof this.view.el != 'undefined') ?
-            this.view.el.html(rendered) : rendered;
+            $(this.view.el).html(rendered) : rendered;
     }
 
     return r;
