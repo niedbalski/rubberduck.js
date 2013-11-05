@@ -15,7 +15,12 @@ define(function() {
     }
 
     c.showUserId = function() {
-        this.getView('user').render(this.id);
+        //Get the user by id and display it
+        var user = this.app.getModel('user').findOne({
+            user_id: this.id
+        }, function(user){
+            return this.getView('user').render(user.id);
+        });
     }
 
     return c;

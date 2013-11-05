@@ -10,7 +10,6 @@
     RubberDuck = {};
     RubberDuck.app = function(options) {
         $.extend(this, $.Deferred(), options || {});
-
         var self = this;
 
         // By default RD will not load libraries from application/libs,
@@ -86,11 +85,11 @@
         });
     }
 
-    RubberDuck.app.prototype.loadedModels = {};
     RubberDuck.app.prototype.loadModels = function() {
         var self = this;
         if ( self.hasModels() ) {
             return $.Deferred(function(deferred) {
+                self.loadedModels = {};
                 $.each(self.models, function(i, model) {
                     self.loadModel(model).done(function(model) {
                         self.loadedModels[model.name] = model;
@@ -104,11 +103,11 @@
         }
     }
 
-    RubberDuck.app.prototype.loadedControllers = {};
     RubberDuck.app.prototype.loadControllers = function() {
         var self = this;
         if ( self.hasControllers() ) {
             return $.Deferred(function(deferred) {
+                self.loadedControllers = {};
                 $.each(self.controllers, function(i, controller) {
                     self.loadController(controller).done(function(controller) {
                         self.loadedControllers[controller.name] = controller;
@@ -123,16 +122,15 @@
     }
 
     RubberDuck.app.prototype.isLoaded = function() {
-        return ( typeof this.loaded != 'undefined' &&
-                 Object.keys(this.loaded).length > 0)
+        return ( typeof this.loadedControllers != 'undefined' &&
+                 Object.keys(this.loadedControllers).length > 0)
     }
 
     RubberDuck.app.prototype.run = function() {
-
         if (!this.isLoaded())
             return console.warn('Cuuuuek, Load the application before invoke run method');
 
-        $.each(this.loaded, function(i, controller) {
+        $.each(this.loadedControllers, function(i, controller) {
             if ( $.isFunction(controller.init) )
                 controller.init();
 
@@ -161,7 +159,7 @@
     }
 
     RubberDuck.app.prototype.getController = function(name) {
-        return this.loaded[name];
+        return this.loadedController[name];
     }
 
     RubberDuck.app.prototype.loadController = function(controller) {
@@ -171,9 +169,9 @@
             require(['controllers/' + controller], function(c) {
                 controller = $.extend(c, new RubberDuck.app.controller(self));
                 $.each(controller.views, function(i, view) {
-                    controller.loaded = {};
+                    controller.loadedViews = {};
                     controller.loadView(view).done(function(view) {
-                        controller.loaded[controller.views[i]] = view;
+                        controller.loadedViews[controller.views[i]] = view;
                         if (i == controller.views.length - 1)
                             return deferred.resolve(controller);
                     });
@@ -184,13 +182,17 @@
         }).promise();
     }
 
+    RubberDuck.app.prototype.getModel = function(name) {
+        return this.loadedModels[name];
+    }
+
     RubberDuck.app.prototype.loadModel = function(model) {
         var self = this;
         return $.Deferred(function(deferred) {
             require(['models/' + model ], function(m) {
                 model = $.extend(m, new RubberDuck.app.model(self));
-                self.loadedModels[m.name] = model;
-                return deferred.resolve(model);
+                self.loadedModels[m.name] = $.Model.extend(model.name, model);
+                return deferred.resolve(self.loadedModels[m.name]);
             }, function(e) {
                 return deferred.reject(e.message);
             });
@@ -217,7 +219,7 @@
     }
 
     RubberDuck.app.controller.prototype.getView = function(name) {
-        return this.loaded[name];
+        return this.loadedViews[name];
     }
 
     RubberDuck.app.controller.prototype.hasRoutes = function() {
@@ -228,8 +230,8 @@
     }
 
     RubberDuck.app.controller.prototype.hasViews = function() {
-        return ( typeof this.loaded != 'undefined' &&
-                 this.loadedeferred.length > 0 );
+        return ( typeof this.loadedViews != 'undefined' &&
+                 this.loadedViews.length > 0 );
     }
 
     RubberDuck.app.controller.prototype.loadRoutes = function() {
