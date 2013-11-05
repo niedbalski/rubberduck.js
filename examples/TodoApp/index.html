@@ -1,17 +1,17 @@
 <!doctype html>
 <html>
   <head>
-    <script type="text/javascript" src="./app/lib/jquery.js"></script>
-    <script type="text/javascript" src="./app/lib/require.js"></script>
+    <script type="text/javascript" src="./lib/jquery.js"></script>
+    <script type="text/javascript" src="./lib/require.js"></script>
 
     <!-- This is the RubberDuck framework -->
-    <script type="text/javascript" src="./rubberduck.js"></script>
+    <script type="text/javascript" src="../../rubberduck.js"></script>
     <script>
       $(document).ready(function() {
 
          var app = new RubberDuck.app({
              name: 'TodoApp',
-             path: '/rubberduck.git/app/',
+             path: '/rubberduck.git/examples/TodoApp/',
              loadLibraries: true,
              controllers: [ 'user', 'product' ],
              models: [ 'user' ]
