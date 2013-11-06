@@ -1,0 +1,28 @@
+{
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": true,
+  "newcap": true,
+  "noarg": true,
+  "sub": true,
+  "undef": true,
+  "unused": true,
+  "boss": true,
+  "eqnull": true,
+  "node": true,
+  "strict": true,
+  "globals": { 
+	"RubberDuck": false,
+	"Handlebars": false,
+   	"$": false,
+	"model": false,
+	"models": false,
+	"routes": false,
+	"handlebars": false,
+	"controllers": false,
+	"location": false,
+	"window": false,
+        "requirejs": false
+  }
+}
