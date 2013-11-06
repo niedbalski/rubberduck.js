@@ -1,6 +1,6 @@
 {
   "name": "RubberDuck",
-  "version": "0.12.20",
+  "version": "0.12.22",
   "devDependencies": {
     "grunt": "latest",
     "grunt-bump": "latest",
