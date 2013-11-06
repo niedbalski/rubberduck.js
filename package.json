@@ -9,5 +9,8 @@
     "grunt-contrib-jshint": "latest",
     "grunt-contrib-uglify": "latest",
     "phantomjs": "latest"
+  },
+  "scripts": {
+    "test": "grunt travis"
   }
 }

@@ -12,8 +12,7 @@ module.exports = function(grunt) {
             },
             all: ['Gruntfile.js', 'src/**/*.js']
         },
-
-        uglify: {	    
+        uglify : {
             options: {
                 banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
                     '<%= grunt.template.today("yyyy-mm-dd") %> */',
@@ -48,6 +47,6 @@ module.exports = function(grunt) {
     grunt.registerTask('stage', 'test', 'bump-only');
     grunt.registerTask('release', ['test', 'uglify:release', 'bump-commit']);
     grunt.registerTask('travis', ['jshint', 'qunit']);
-    grunt.registerTask('default', ['qunit']);
+    grunt.registerTask('default', ['test']);
 
 };
