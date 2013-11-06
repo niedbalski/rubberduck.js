@@ -20,6 +20,7 @@ require.config({
 require(
     ['jquery', 'RubberDuck'],
     function(jquery, RubberDuck) {
+        window['RubberDuck'] = RubberDuck;
         //run the tests in the desired order :)
         require(['basic'], function(basic) {
             QUnit.start();
