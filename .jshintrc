@@ -11,11 +11,11 @@
   "boss": true,
   "eqnull": true,
   "node": true,
-  "strict": true,
+  "jquery": true,
   "globals": { 
 	"RubberDuck": false,
 	"Handlebars": false,
-   	"$": false,
+	"define": false,
 	"model": false,
 	"models": false,
 	"routes": false,

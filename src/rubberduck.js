@@ -7,11 +7,14 @@
 //
 
 
-(function() {
+define(function() {
+    "use strict";
 
-    RubberDuck = {},
+    var RubberDuck = {};
+
     RubberDuck.app = function(options) {
         $.extend(this, $.Deferred(), options || {});
+
         var self = this;
 
         // By default RD will not load libraries from application/libs,
@@ -33,9 +36,9 @@
         });
 
         return this;
-    },
+    };
 
-    RubberDuck.app.prototype.cache = {},
+    RubberDuck.app.prototype.cache = {};
     RubberDuck.app.prototype.getLibraries = function() {
         var self = this;
         return ( self.loadLibraries ) ?
@@ -56,7 +59,7 @@
                         exports: 'jQuery.fn.Model'
                     }
                 }}) : {};
-    },
+    };
 
     RubberDuck.app.prototype.requireLibraries = function() {
         var self = this;
@@ -67,14 +70,14 @@
 
             require(["jquery.model",
                      "jquery.routes",
-                     "handlebars"], function(models,routes,handlebars) {
+                     "handlebars"], function(models, routes, handlebars) {
                          return deferred.resolve(models, routes, handlebars);
                      }, function(e) {
                          return deferred.reject(e.message);
                      });
 
         }).promise();
-    },
+    };
 
     RubberDuck.app.prototype.loadApplication = function() {
         var self = this;
@@ -87,7 +90,7 @@
         w.fail(function(e) {
             return self.reject(self, e);
         });
-    },
+    };
 
     RubberDuck.app.prototype.loadModels = function() {
         var self = this;
@@ -106,7 +109,7 @@
                 });
             });
         }
-    },
+    };
 
     RubberDuck.app.prototype.loadControllers = function() {
         var self = this;
@@ -125,12 +128,12 @@
                 }); //TODO: write a fallback
             });
         }
-    },
+    };
 
     RubberDuck.app.prototype.isLoaded = function() {
         return ( typeof this.loadedControllers !== 'undefined' &&
                  Object.keys(this.loadedControllers).length > 0);
-    },
+    };
 
     RubberDuck.app.prototype.run = function() {
         if (!this.isLoaded()) {
@@ -156,21 +159,21 @@
         });
 
         $.routes.load(location.hash);
-    },
+    };
 
     RubberDuck.app.prototype.hasControllers = function() {
         return ( typeof this.controllers !== 'undefined' &&
                  this.controllers.length > 0);
-    },
+    };
 
     RubberDuck.app.prototype.hasModels = function() {
         return ( typeof this.models !== 'undefined' &&
                  this.models.length > 0);
-    },
+    };
 
     RubberDuck.app.prototype.getController = function(name) {
         return this.loadedController[name];
-    },
+    };
 
     RubberDuck.app.prototype.loadController = function(controller) {
         var self = this;
@@ -191,11 +194,11 @@
                 return deferred.reject(e.message);
             });
         }).promise();
-    },
+    };
 
     RubberDuck.app.prototype.getModel = function(name) {
         return this.loadedModels[name];
-    },
+    };
 
     RubberDuck.app.prototype.loadModel = function(model) {
         var self = this;
@@ -208,17 +211,17 @@
                 return deferred.reject(e.message);
             });
         }).promise();
-    },
+    };
 
     RubberDuck.app.model = function(app) {
         this.app = app;
         return this;
-    },
+    };
 
     RubberDuck.app.controller = function(app) {
         this.app = app;
         return this;
-    },
+    };
 
     RubberDuck.app.controller.prototype.loadView = function(viewName) {
         var self = this;
@@ -227,23 +230,23 @@
                 deferred.resolve($.extend(v, new RubberDuck.app.view(self)));
             });
         }).promise();
-    },
+    };
 
     RubberDuck.app.controller.prototype.getView = function(name) {
         return this.loadedViews[name];
-    },
+    };
 
     RubberDuck.app.controller.prototype.hasRoutes = function() {
         var self = this;
         var routes = self.routes();
         return ( typeof routes !== 'undefined' &&
                  Object.keys(routes).length > 0);
-    },
+    };
 
     RubberDuck.app.controller.prototype.hasViews = function() {
         return ( typeof this.loadedViews !== 'undefined' &&
                  this.loadedViews.length > 0 );
-    },
+    };
 
     RubberDuck.app.controller.prototype.loadRoutes = function() {
         var self = this;
@@ -251,15 +254,15 @@
         Object.keys(routes).forEach(function(r) {
             $.routes.add(r, routes[r], self);
         });
-    },
+    };
 
     RubberDuck.app.view = function(controller, options) {
         $.extend(this, options || {});
         this.controller = controller;
         return this;
-    },
+    };
 
-    RubberDuck.app.view.prototype.cache = {},
+    RubberDuck.app.view.prototype.cache = {};
     RubberDuck.app.template = function(view, data) {
         if ( typeof view !== 'undefined' ) {
             this.view = view;
@@ -270,7 +273,7 @@
             this.tpl = Handlebars.compile(this._data);
         }
         return this;
-    },
+    };
 
     RubberDuck.app.template.prototype.load = function(name) {
         var self = this;
@@ -309,14 +312,14 @@
             }
 
         }).promise();
-    },
+    };
 
     RubberDuck.app.template.prototype.render = function(data) {
         var rendered = this.tpl(data);
         return ( typeof this.view !== 'undefined' &&
                  typeof this.view.el !== 'undefined') ?
             $(this.view.el).html(rendered) : rendered;
-    }; // jshint ignore:line
+    };
 
-    return RubberDuck; // jshint ignore:line
-})();
+    return RubberDuck;
+});

@@ -4,31 +4,32 @@
     <script type="text/javascript" src="./lib/jquery.js"></script>
     <script type="text/javascript" src="./lib/require.js"></script>
 
-    <!-- This is the RubberDuck framework -->
-    <script type="text/javascript" src="../../rubberduck.js"></script>
     <script>
-      $(document).ready(function() {
+    $(document).ready(function() {
 
-         var app = new RubberDuck.app({
-             name: 'TodoApp',
-             path: '/rubberduck.git/examples/TodoApp/',
-             loadLibraries: true,
-             controllers: [ 'user', 'product' ],
-             models: [ 'user' ]
-         });
+        require(['../../src/rubberduck.js'], function(RubberDuck) {
 
-         app.done(function(app) {
-              console.debug('Application is ready to rock and roll!');
-              app.run();
-         });
+            var app = new RubberDuck.app({
+                name: 'TodoApp',
+                path: '/rubberduck.git/examples//',
+                loadLibraries: true,
+                controllers: [ 'user', 'product' ],
+                models: [ 'user' ]
+            });
 
-         app.fail(function(app, error) {
-            $('body').append('<h1> Application ' + app.name +
-                ' cannot be loaded at this time: ' + error);
-         });
+            app.done(function(app) {
+                console.debug('Application is ready to rock and roll!');
+                app.run();
+            });
 
-      });
+            app.fail(function(app, error) {
+                $('body').append('<h1> Application ' + app.name +
+                                 ' cannot be loaded at this time: ' + error);
+            });
 
+        });
+
+    });
     </script>
 
   </head>

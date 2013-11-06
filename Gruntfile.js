@@ -1,30 +1,52 @@
 "use strict";
 
 module.exports = function(grunt) {
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+        qunit: {
+            files: ['tests/index.html']
+        },
+        jshint: {
+            options: {
+                jshintrc: '.jshintrc'
+            },
+            all: ['Gruntfile.js', 'src/**/*.js']
+        },
 
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    qunit: {
-      files: ['tests/index.html']
-    },
-    jshint: {
-      options: {
-                    jshintrc: '.jshintrc'
-      },
-      all: ['Gruntfile.js', 'rubberduck.js']
-    },
-    watch: {
-      files: ['tests/*.js', 'tests/*.html', 'rubberduck.js'],
-      tasks: ['jshint', 'qunit']
-    }
-  });
+        uglify: {
+            options: {
+                banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+                    '<%= grunt.template.today("yyyy-mm-dd") %> */',
+                mangle: false
+            },
+            release: {
+                files: {
+                    'releases/<%= pkg.name %>-<%= pkg.version %>.min.js': ['src/rubberduck.js']
+                }
+            }
+        },
 
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  
-  grunt.registerTask('test', 'qunit');
-  grunt.registerTask('travis', ['jshint', 'qunit']);
-  grunt.registerTask('default', ['qunit']);
+        watch: {
+            files: ['tests/*.js', 'tests/*.html', 'src/*.js'],
+            tasks: ['jshint', 'qunit']
+        },
+
+        bump: {
+            options: {
+                pushTo: 'origin',
+            }
+        }
+    });
+
+    grunt.loadNpmTasks('grunt-contrib-qunit');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-bump');
+
+    grunt.registerTask('test', 'qunit');
+    grunt.registerTask('release', ['jshint', 'qunit', 'uglify:release', 'bump']);
+    grunt.registerTask('travis', ['jshint', 'qunit']);
+    grunt.registerTask('default', ['qunit']);
 
 };
