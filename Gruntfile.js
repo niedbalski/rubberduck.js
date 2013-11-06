@@ -14,15 +14,19 @@ module.exports = function(grunt) {
         },
 
         qunit: {
-            all: {
-                options: {
-                    timeout: 5000,
-                    urls: [
-                        'http://localhost:3000/index.html'
-                    ]
-                }
-            }
+            all: ['tests/*.html']
         },
+
+        // qunit: {
+        //     all: {
+        //         options: {
+        //             timeout: 5000,
+        //             urls: [
+        //                 'http://localhost:3000/index.html'
+        //             ]
+        //         }
+        //     }
+        // },
 
         jshint: {
             options: {
@@ -63,7 +67,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-bump');
 
-    grunt.registerTask('test', ['connect', 'qunit']);
+    grunt.registerTask('test', ['qunit']);
     grunt.registerTask('stage', 'test', 'bump-only');
     grunt.registerTask('release', ['test', 'uglify:release', 'bump-commit']);
     grunt.registerTask('travis', ['jshint', 'qunit']);
