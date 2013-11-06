@@ -1,7 +1,5 @@
-Current Build Status
-====================
 
-[![Build Status](https://travis-ci.org/niedbalski/rubberduck.js.png?branch=master)](https://travis-ci.org/niedbalski/rubberduck.js)
+Build Status: [![Build Status](https://travis-ci.org/niedbalski/rubberduck.js.png?branch=master)](https://travis-ci.org/niedbalski/rubberduck.js)
 
 RubberDuck.js
 =============
