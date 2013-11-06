@@ -8,7 +8,6 @@
     "grunt-contrib-watch": "latest",
     "grunt-contrib-jshint": "latest",
     "grunt-contrib-uglify": "latest",
-    "grunt-contrib-connect": "latest",
     "phantomjs": ">=1.9.0-2"
   },
   "scripts": {

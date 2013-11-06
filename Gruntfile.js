@@ -3,34 +3,15 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-
-        connect: {
-            server: {
-                options: {
-                    port: 3000,
-                    base: 'tests'
-                }
-            }
-        },
-
         qunit: {
-            all: {
-                options: {
-                    timeout: 5000,
-                    urls: [
-                        'http://localhost:3000/index.html'
-                    ]
-                }
-            }
+            files: ['tests/index.html']
         },
-
         jshint: {
             options: {
                 jshintrc: '.jshintrc'
             },
             all: ['Gruntfile.js', 'src/**/*.js']
         },
-
         uglify : {
             options: {
                 banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
@@ -60,10 +41,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-bump');
 
-    grunt.registerTask('test', ['connect', 'qunit']);
+    grunt.registerTask('test', 'qunit');
     grunt.registerTask('stage', 'test', 'bump-only');
     grunt.registerTask('release', ['test', 'uglify:release', 'bump-commit']);
     grunt.registerTask('travis', ['jshint', 'qunit']);
