@@ -1,0 +1,11 @@
+{
+  "name": "RubberDuck",
+  "version": "0.12.0",
+  "devDependencies": {
+    "grunt": "latest",
+    "grunt-contrib-qunit": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-contrib-jshint": "latest",
+    "phantomjs": "latest"
+  }
+}
