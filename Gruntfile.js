@@ -8,25 +8,24 @@ module.exports = function(grunt) {
             server: {
                 options: {
                     port: 3000,
-                    base: 'tests'
+                    base: '.',
                 }
             }
         },
 
-        qunit: {
-            all: ['tests/*.html']
-        },
-
         // qunit: {
-        //     all: {
-        //         options: {
-        //             timeout: 5000,
-        //             urls: [
-        //                 'http://localhost:3000/index.html'
-        //             ]
-        //         }
-        //     }
+        //     all: ['tests/*.html']
         // },
+
+        qunit: {
+            all: {
+                options: {
+                    urls: [
+                        'http://127.0.0.1:3000/tests/index.html'
+                    ]
+                }
+            }
+        },
 
         jshint: {
             options: {
@@ -49,7 +48,7 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            files: ['tests/*.js', 'tests/*.html', 'src/*.js'],
+            files: ['tests/tests.js', 'tests/*.html', 'src/rubberduck.js'],
             tasks: ['jshint', 'qunit']
         },
 
@@ -67,7 +66,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-bump');
 
-    grunt.registerTask('test', ['qunit']);
+    grunt.registerTask('test', ['connect', 'qunit']);
     grunt.registerTask('stage', 'test', 'bump-only');
     grunt.registerTask('release', ['test', 'uglify:release', 'bump-commit']);
     grunt.registerTask('travis', ['jshint', 'qunit']);

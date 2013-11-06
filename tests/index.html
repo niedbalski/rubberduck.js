@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>QUnit Example</title>
-  <link rel="stylesheet" href="libs/qunit.css">
+<meta charset="utf-8">
+<title>QUnit and Require.js demo</title>
+<link rel="stylesheet" href="libs/qunit.css">
+<script type="text/javascript" src="libs/qunit.js"></script>
+<script type="text/javascript">
+    QUnit.config.autostart = false;
+</script>
 </head>
 <body>
-  <div id="qunit"></div>
-  <div id="qunit-fixture"></div>
-  <script src="libs/qunit.js"></script>
-  <script src="tests.js"></script>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script data-main="runner" src="libs/require.js"></script>
 </body>
 </html>

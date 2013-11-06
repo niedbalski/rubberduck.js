@@ -7,11 +7,9 @@
 //
 
 
-define(function() {
-    "use strict";
+(function() {
 
-    var RubberDuck = {};
-
+    RubberDuck = {},
     RubberDuck.app = function(options) {
         $.extend(this, $.Deferred(), options || {});
 
@@ -322,4 +320,5 @@ define(function() {
     };
 
     return RubberDuck;
-});
+
+})();

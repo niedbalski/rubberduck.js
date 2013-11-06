@@ -1,3 +1,9 @@
-test( "hello test", function() {
-  ok( 1 == "1", "Passed!" );
+define(function() {
+    var run = function() {
+        test("RubberDuck object properties", function() {
+            var r = new RubberDuck.app();
+            ok( typeof r === 'object', 'Passed!' );
+        });
+    }
+    return {run: run};
 });
