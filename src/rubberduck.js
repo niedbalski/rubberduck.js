@@ -15,7 +15,7 @@
     RubberDuck.Exception = function(message) {
         this.message = message;
         console.debug('Raised exception: %s', this.message);
-    },
+    };
 
     //@async
     RubberDuck.app = function(options) {
