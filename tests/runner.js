@@ -3,7 +3,7 @@
 require.config({
     shim: {
        'RubberDuck': {
-           requires: [ 'jquery' ],
+           requires: [ 'Handlebars', 'jquery' ],
            exports: 'RubberDuck'
        }
     },
@@ -11,6 +11,7 @@ require.config({
     paths: {
         'QUnit': 'libs/qunit',
         'jquery': 'libs/jquery',
+        'Handlebars': 'libs/handlebars',
         'RubberDuck': '../src/rubberduck'
     }
 
@@ -18,8 +19,8 @@ require.config({
 
 // require the unit tests.
 require(
-    ['jquery', 'RubberDuck'],
-    function(jquery, RubberDuck) {
+    ['jquery', 'Handlebars', 'RubberDuck'],
+    function(jquery, Handlebars, RubberDuck) {
         window['RubberDuck'] = RubberDuck;
         //run the tests in the desired order :)
         require(['basic'], function(basic) {

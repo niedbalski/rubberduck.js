@@ -11,6 +11,13 @@
     "use strict";
 
     var RubberDuck = {};
+
+    RubberDuck.Exception = function(message) {
+        this.message = message;
+        console.debug('Raised exception: %s', this.message);
+    },
+
+    //@async
     RubberDuck.app = function(options) {
         $.extend(this, $.Deferred(), options || {});
 
@@ -19,13 +26,13 @@
         // By default RD will not load libraries from application/libs,
         // if you want to enable this use loadLibraries: true
         // in your application settings
-        if ( typeof self.loadLibraries === 'undefined' ) {
+        if ( $.type(self.loadLibraries) === 'undefined' ) {
             self.loadLibraries = false;
         }
 
         requirejs.config(
             $.extend({}, {
-                baseUrl: (typeof self.path !== 'undefined') ? self.path : 'app/'
+                baseUrl: ( $.type(self.path) !== 'undefined') ? self.path : 'app/'
             }, (self.loadLibraries) ? self.getLibraries() : {}));
 
         self.requireLibraries().done(function() {
@@ -37,7 +44,10 @@
         return this;
     };
 
+    //@sync
     RubberDuck.app.prototype.cache = {};
+
+    //@sync
     RubberDuck.app.prototype.getLibraries = function() {
         var self = this;
         return ( self.loadLibraries ) ?
@@ -60,6 +70,7 @@
                 }}) : {};
     };
 
+    //@async
     RubberDuck.app.prototype.requireLibraries = function() {
         var self = this;
         return $.Deferred(function(deferred) {
@@ -78,6 +89,7 @@
         }).promise();
     };
 
+    //@async
     RubberDuck.app.prototype.loadApplication = function() {
         var self = this;
         var w = $.when(this.loadControllers(), this.loadModels());
@@ -91,6 +103,7 @@
         });
     };
 
+    //@async
     RubberDuck.app.prototype.loadModels = function() {
         var self = this;
         if ( self.hasModels() ) {
@@ -110,6 +123,7 @@
         }
     };
 
+    //@async
     RubberDuck.app.prototype.loadControllers = function() {
         var self = this;
         if ( self.hasControllers() ) {
@@ -129,15 +143,20 @@
         }
     };
 
+    //@sync
     RubberDuck.app.prototype.isLoaded = function() {
-        return ( typeof this.loadedControllers !== 'undefined' &&
+        return ( $.type(this.loadedControllers) !== 'undefined' &&
                  Object.keys(this.loadedControllers).length > 0);
     };
 
+    //@sync
     RubberDuck.app.prototype.run = function() {
+
         if (!this.isLoaded()) {
-            return console.warn('Cuuuuek, Load the application before invoke run method');
+            console.warn('Cuuuuek, Load the application before invoke run method');
+            return false;
         }
+
         $.each(this.loadedControllers, function(i, controller) {
             if ( $.isFunction(controller.init) ){
                 controller.init();
@@ -160,20 +179,24 @@
         $.routes.load(location.hash);
     };
 
+    //@sync
     RubberDuck.app.prototype.hasControllers = function() {
-        return ( typeof this.controllers !== 'undefined' &&
+        return ( $.type(this.controllers) !== 'undefined' &&
                  this.controllers.length > 0);
     };
 
+    //@sync
     RubberDuck.app.prototype.hasModels = function() {
-        return ( typeof this.models !== 'undefined' &&
+        return ( $.type(this.models) !== 'undefined' &&
                  this.models.length > 0);
     };
 
+    //@sync
     RubberDuck.app.prototype.getController = function(name) {
         return this.loadedController[name];
     };
 
+    //@async
     RubberDuck.app.prototype.loadController = function(controller) {
         var self = this;
 
@@ -195,10 +218,14 @@
         }).promise();
     };
 
+    //@sync
     RubberDuck.app.prototype.getModel = function(name) {
-        return this.loadedModels[name];
+        return ( $.type(this.loadedModels) !== 'undefined' &&
+                 $.type(this.loadedModels[name]) !== 'undefined') ?
+            this.loadedModels[name] : false;
     };
 
+    //@async
     RubberDuck.app.prototype.loadModel = function(model) {
         var self = this;
         return $.Deferred(function(deferred) {
@@ -212,16 +239,19 @@
         }).promise();
     };
 
+    //@sync
     RubberDuck.app.model = function(app) {
         this.app = app;
         return this;
     };
 
+    //@sync
     RubberDuck.app.controller = function(app) {
         this.app = app;
         return this;
     };
 
+    //@async
     RubberDuck.app.controller.prototype.loadView = function(viewName) {
         var self = this;
         return $.Deferred(function(deferred) {
@@ -231,49 +261,72 @@
         }).promise();
     };
 
+    //@sync
     RubberDuck.app.controller.prototype.getView = function(name) {
-        return this.loadedViews[name];
+        return ( $.type(this.loadedViews) !== 'undefined' &&
+            $.type(this.loadedViews[name]) !== 'undefined') ?
+            this.loadedViews[name] : false;
     };
 
+    //@sync
     RubberDuck.app.controller.prototype.hasRoutes = function() {
         var self = this;
+        if ( $.type(self.routes) !== 'function' ) {
+            return false;
+        }
         var routes = self.routes();
-        return ( typeof routes !== 'undefined' &&
-                 Object.keys(routes).length > 0);
+        return ( $.type(routes) !== 'undefined' &&
+                 Object.keys(routes).length > 0 );
     };
 
+    //@sync
     RubberDuck.app.controller.prototype.hasViews = function() {
-        return ( typeof this.loadedViews !== 'undefined' &&
+        return ( $.type(this.loadedViews) !== 'undefined' &&
                  this.loadedViews.length > 0 );
     };
 
+    //@sync
     RubberDuck.app.controller.prototype.loadRoutes = function() {
         var self = this;
+        if ( $.type(self.routes) !== 'function' ) {
+            return false;
+        }
         var routes = self.routes();
         Object.keys(routes).forEach(function(r) {
             $.routes.add(r, routes[r], self);
         });
     };
 
+     //@sync
     RubberDuck.app.view = function(controller, options) {
         $.extend(this, options || {});
         this.controller = controller;
         return this;
     };
 
+    //@sync
     RubberDuck.app.view.prototype.cache = {};
+
+    //@sync
     RubberDuck.app.template = function(view, data) {
-        if ( typeof view !== 'undefined' ) {
+
+        if ( $.type(view) !== 'undefined' ) {
             this.view = view;
         }
 
-        if ( typeof data !== 'undefined' ) {
-            this._data = data;
-            this.tpl = Handlebars.compile(this._data);
+        if ( $.type(data) !== 'undefined' ) {
+            this.data = data;
+            try {
+                this.tpl = Handlebars.compile(this.data);
+            } catch(e) {
+                throw new RubberDuck.Exception('Error trying to compile template: ' +
+                                               e.message);
+            }
         }
         return this;
     };
 
+    //@async
     RubberDuck.app.template.prototype.load = function(name) {
         var self = this;
         var templatePath = "";
@@ -281,12 +334,12 @@
         self.defaultTemplatePath = 'views/templates';
 
         return $.Deferred(function(deferred) {
-            if ( typeof self.view === 'undefined' ) {
+            if ( $.type(self.view) === 'undefined' ) {
                 templatePath = self.defaultTemplatePath;
             } else {
-                if ( typeof self.view.templatePath !== 'undefined' ) {
+                if ( $.type(self.view.templatePath) !== 'undefined' ) {
                     templatePath = self.view.templatePath;
-                } else if ( typeof self.view.controller.app.path !== 'undefined' ) {
+                } else if ( $.type(self.view.controller.app.path) !== 'undefined' ) {
                         templatePath = self.view.controller.app.path + 'views/templates';
                 } else {
                     console.warn('Not defined template path, using default location %s',
@@ -313,11 +366,15 @@
         }).promise();
     };
 
+    //@sync
     RubberDuck.app.template.prototype.render = function(data) {
         var rendered = this.tpl(data);
-        return ( typeof this.view !== 'undefined' &&
-                 typeof this.view.el !== 'undefined') ?
-            $(this.view.el).html(rendered) : rendered;
+        if ( $.type(this.view) !== 'undefined' &&
+             $.type(this.view.el) !== 'undefined' ) {
+            return $(this.view.el).html(rendered);
+        }
+
+        return rendered;
     };
 
     return RubberDuck;
