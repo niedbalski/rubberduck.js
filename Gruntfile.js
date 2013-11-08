@@ -69,7 +69,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['connect', 'qunit']);
     grunt.registerTask('stage', 'test', 'bump-only');
     grunt.registerTask('release', ['test', 'uglify:release', 'bump-commit']);
-    grunt.registerTask('travis', ['jshint', 'qunit']);
+    grunt.registerTask('travis', [ 'connect', 'jshint', 'qunit']);
     grunt.registerTask('default', ['test']);
 
 };
