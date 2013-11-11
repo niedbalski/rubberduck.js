@@ -23,6 +23,15 @@
 	"controllers": false,
 	"location": false,
 	"window": false,
+	"equal": false,
+	"deepEqual": false,
+	"ok": false,
+	"start": false,
+	"stop": false,
+	"raises": false,
+	"QUnit": false,
+	"asyncTest": false,
+	"test": false,
         "requirejs": false
   }
 }

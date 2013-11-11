@@ -158,6 +158,7 @@
         }
 
         $.each(this.loadedControllers, function(i, controller) {
+
             if ( $.isFunction(controller.init) ){
                 controller.init();
             }
@@ -177,6 +178,7 @@
         });
 
         $.routes.load(location.hash);
+        return true;
     };
 
     //@sync
@@ -193,7 +195,9 @@
 
     //@sync
     RubberDuck.app.prototype.getController = function(name) {
-        return this.loadedController[name];
+        return ( $.type(this.loadedControllers) !== 'undefined' &&
+                 this.loadedControllers[name] !== 'undefined' ) ?
+            this.loadedControllers[name] : false;
     };
 
     //@async
