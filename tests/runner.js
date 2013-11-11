@@ -41,7 +41,6 @@ require(
 
     function(jquery, models, routes,
              Handlebars, RubberDuck) {
-        console.log(jquery);
         window['RubberDuck'] = RubberDuck;
         //run the tests in the desired order :)
         require(['basic'], function(basic) {
