@@ -18,7 +18,7 @@ Currently rubberduck is distributed as a [Single minified file](../master/releas
 
 The initial dependencies that are required by default are [RequireJS](https://github.com/jrburke/requirejs "RequireJS") and [jQuery](https://github.com/jquery/jquery)
 
-Then the following is the list of dependencies:
+List of dependencies:
 
 * [jQuery JavaScript Library (tested with: v2.0.3) ](https://github.com/jquery/jquery 'jQuery')
 * [jQuery routes plugin](https://github.com/thorsteinsson/jquery-routes 'jquery-routes')
