@@ -30,6 +30,7 @@ require(
       'jquery.routes',
       'Handlebars',
       'RubberDuck' ],
+      
 
     function(jquery, models, routes,
              Handlebars, RubberDuck) {
