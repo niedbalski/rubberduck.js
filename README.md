@@ -1,4 +1,3 @@
-
 Build Status: [![Build Status](https://travis-ci.org/niedbalski/rubberduck.js.png?branch=master)](https://travis-ci.org/niedbalski/rubberduck.js)
 
 RubberDuck.js
@@ -15,7 +14,7 @@ frameworks.
 
 # Software dependencies
 
-Currently rubberduck is distributed as a [Single minified file](../blob/master/releases).
+Currently rubberduck is distributed as a [Single minified file](../master/releases).
 
 The initial dependencies that are required by default are [RequireJS](https://github.com/jrburke/requirejs "RequireJS") and [jQuery](https://github.com/jquery/jquery)
 
