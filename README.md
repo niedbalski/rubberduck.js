@@ -30,8 +30,7 @@ require(
       'RubberDuck' ],
       
 
-    function(jquery, models, routes,
-             Handlebars, RubberDuck) {
+    function(...) {
 
             //After loading the dependencies, create a new application
             var app = new RubberDuck.app({
