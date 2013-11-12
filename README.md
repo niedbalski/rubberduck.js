@@ -12,9 +12,16 @@ single page applications quickly.
 and some other hacks to make it works easily without the mess of other javascript
 frameworks.
 
+# Development rules
+
+1. A [jshint](../master/.jshint) configuration is used to ensure code mets the 'strict' standard. 
+2. A [Travis build](https://travis-ci.org/niedbalski/rubberduck.js) is already configured to run the tests. Before to do a pull request, be sure to run ``grunt tests`` and check if all
+the tests are passing OK.
+
+
 # Software dependencies
 
-Currently rubberduck is distributed as a [Single minified file](../master/releases).
+Currently *RubberDuck.js* is distributed as a [Single minified file](../master/releases).
 
 The initial dependencies that are required by default are [RequireJS](https://github.com/jrburke/requirejs "RequireJS") and [jQuery](https://github.com/jquery/jquery)
 
@@ -25,7 +32,9 @@ List of dependencies:
 * [jQuery models plugin](http://v3.javascriptmvc.com/jquery/dist/jquery.model.js 'jquery-model')
 * [Handlebars js](https://github.com/wycats/handlebars.js/ 'HandlebarsJS')
 
-If you want to do a quick hack using *RubberDuck.js* you can pass the *loadLibraries:true* option when you initialize your application, and the framework will try to load dependencies from the libs/ path inside your application directory.
+If you want to do a quick hack using *RubberDuck.js* you can pass the *loadLibraries:true* 
+option when you initialize your application, and the framework will try to load dependencies 
+from the libs/ path inside your application directory.
 
 If you aren't going to use the *loadLibraries* option , then is highly recommended to use
 the following [RequireJS](https://github.com/jrburke/requirejs "RequireJS") sequence.
