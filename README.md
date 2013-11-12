@@ -8,9 +8,7 @@ RubberDuck.js
 *RubberDuck.js* is a pretty minimal(minified 7KB) framework written to build simple
 single page applications quickly.
 
-*RubberDuck.js* core is on written top of other open-source javascript libraries
-and some other hacks to make it works easily without the mess of other javascript
-frameworks.
+*RubberDuck.js* core uses other open-source javascript libraries (Check `dependencies`)
 
 # Hello world with *RubberDuck.js*
 
