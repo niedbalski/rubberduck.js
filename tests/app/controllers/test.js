@@ -15,7 +15,7 @@ define(function() {
     }
 
     c.showTestId = function() {
-        return this.getView('test').render(test_id);
+        return this.getView('test').render(this.id);
     }
 
     return c;

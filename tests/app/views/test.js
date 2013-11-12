@@ -7,7 +7,7 @@ define(function() {
         new RubberDuck.app.template(this).load('test')
             .done(function(tpl) {
                 return tpl.render({
-                    test_id: id
+                    test_id: test_id
                 });
         });
     }

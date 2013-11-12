@@ -335,7 +335,7 @@
         var self = this;
         var templatePath = "";
 
-        self.defaultTemplatePath = 'views/templates';
+        self.defaultTemplatePath = 'app/views/templates';
 
         return $.Deferred(function(deferred) {
             if ( $.type(self.view) === 'undefined' ) {
